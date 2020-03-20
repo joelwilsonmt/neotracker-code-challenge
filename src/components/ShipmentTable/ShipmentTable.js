@@ -5,63 +5,34 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Paper from '@material-ui/core/Paper';
 import _ from 'lodash'
-import Tooltip from '@material-ui/core/Tooltip';
-import styled from 'styled-components'
 
-const HoverDetails = styled.div`
-    border: 1px solid #333;
-    padding: 10px;
-`
+import ExpansionRow from './ExpansionRow'
+
+
 
 export default ({ data }) => {
-    const rows = data
-    const columns = Object.keys(rows[0])
-    return (
-        <TableContainer component={Paper}>
-            <Table aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        {columns.map(column => (
-                            <TableCell>{_.upperFirst(column)}</TableCell>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map(row => (
-                        <TableRow key={row.name}>
-                            {columns.map(column => {
-                                return (
-                                    typeof row[column] === "object" ?
-                                        <TableCell>
-                                            <Tooltip
-                                                title={row[column].map((item, index) => (
-                                                    <HoverDetails>
-                                                        {Object.keys(item).map(key => (
-                                                            <Typography variant="body2" color="white" align="center">{_.upperFirst(key)}: {item[key]}</Typography>
-                                                        ))}
-                                                    </HoverDetails>
-                                                ))}
-                                            >
-                                                <p>{_.upperFirst(column)} Info</p>
-                                            </Tooltip>
-                                        </TableCell>
-                                        :
-                                        <TableCell>{row[column]}</TableCell>
-                                )
-                            })}
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    )
+  const rows = data
+  const columns = Object.keys(rows[0])
+  return (
+    <TableContainer component={Paper}>
+      <Table aria-label="shipment table">
+        <TableHead>
+          <TableRow>
+            {columns.map(column => (
+              <TableCell>{_.upperFirst(column)}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map(row => (
+            <ExpansionRow rowData={row} columns={columns} />
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  )
 }
 
 /*
