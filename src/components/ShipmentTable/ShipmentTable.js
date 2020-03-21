@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -6,33 +6,200 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableFooter from '@material-ui/core/TableFooter';
+import IconButton from '@material-ui/core/IconButton';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import LastPageIcon from '@material-ui/icons/LastPage';
+
 import _ from 'lodash'
+import styled from 'styled-components'
+
 
 import ExpansionRow from './ExpansionRow'
 
+function TablePaginationActions(props) {
+  const { count, page, rowsPerPage, onChangePage } = props;
 
+  const handleFirstPageButtonClick = event => {
+    onChangePage(event, 0);
+  };
 
-export default ({ data }) => {
+  const handleBackButtonClick = event => {
+    onChangePage(event, page - 1);
+  };
+
+  const handleNextButtonClick = event => {
+    console.log("next button clicked")
+    onChangePage(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = event => {
+    onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <div>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        <FirstPageIcon />
+      </IconButton>
+      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+        <KeyboardArrowLeft />
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        <KeyboardArrowRight />
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        <LastPageIcon />
+      </IconButton>
+    </div>
+  );
+}
+
+const ShipmentTable = ({ data, sort, currentPage }) => {
   const rows = data
   const columns = Object.keys(rows[0])
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    console.log("rows per page", rowsPerPage)
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label="shipment table">
         <TableHead>
           <TableRow>
             {columns.map(column => (
-              <TableCell>{_.upperFirst(column)}</TableCell>
+              <TableCell onClick={() => sort(column)}>{_.upperFirst(column)}</TableCell>
             ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
-            <ExpansionRow rowData={row} columns={columns} />
-          ))}
+          {(rowsPerPage > 0
+            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : rows).map((row, index) => (
+              <ExpansionRow index={index} rowData={row} columns={columns} />
+            ))}
         </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              //colSpan={3}
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: { 'aria-label': 'rows per page' },
+                native: true,
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            //ActionsComponent={<p>as</p>}
+            />
+
+          </TableRow>
+        </TableFooter>
       </Table>
     </TableContainer>
   )
+}
+
+const ButtonContainer = styled.div`
+  margin-top: 20px;
+  text-align: center;
+  .previous {
+    margin-right: 20px;
+  }
+`
+const ButtonGroup = ({ currentPage, setPage, pageLength }) => (
+  <ButtonContainer className="button-container">
+    <Button
+      className="page-button previous"
+      disabled={currentPage === 0 || pageLength === 0}
+      onClick={() => setPage(currentPage - 1)}
+      variant="contained"
+      color="primary"
+    >
+      Previous Page
+      </Button>
+    <Button
+      className="page-button next"
+      disabled={currentPage === pageLength - 1 || pageLength === 0}
+      onClick={() => setPage(currentPage + 1)}
+      variant="contained"
+      color="primary"
+    >
+      Next Page
+      </Button>
+  </ButtonContainer>
+)
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  .button-container {
+    margin-top: 5px;
+  }
+`
+export default ({ data }) => {
+  const [filteredData, setData] = useState(data)
+  const [currentPage, setPage] = useState(0)
+  const [sortAscending, setSortAscending] = useState(true)
+
+  const search = (e) => {
+    //take to first page (results page):
+    setPage(0)
+    //conduct search:
+    const searchTerm = e.target.value
+    const newData = _.filter(data, (item) => item.id.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0)
+    setData(newData)
+  }
+
+  const sort = (column) => {
+    const newData = _.orderBy(data, column, [sortAscending ? 'asc' : 'desc', sortAscending ? 'desc' : 'asc'])
+    setSortAscending(!sortAscending)
+    setData(newData)
+  }
+
+  // const pages = _.chunk(filteredData, rowsPerPage)
+  return [
+    <Header>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Shipment Tracker
+      </Typography>
+      <TextField onChange={(e) => search(e)} id="table-search" label="Search by Shipment ID" variant="outlined" />
+      <ButtonGroup pageLength={filteredData.length} currentPage={currentPage} setPage={setPage} />
+    </Header>,
+    filteredData.length === 0 ? null : <ShipmentTable sort={sort} data={filteredData} />,
+    <ButtonGroup pageLength={filteredData.length} currentPage={currentPage} setPage={setPage} />
+  ]
 }
 
 /*
