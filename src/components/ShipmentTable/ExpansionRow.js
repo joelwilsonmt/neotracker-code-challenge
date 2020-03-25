@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import _ from 'lodash'
 import MUITableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Tooltip from '@material-ui/core/Tooltip';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
+import Link from '@material-ui/core/Link';
+import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+
+import Editor from "./Editor.js"
 
 const TableRow = styled(MUITableRow)`
     ${props => props.index % 2 === 0 ?
@@ -34,56 +37,53 @@ const SubRow = styled(MUITableRow)`
 const CollapseInner = styled.div`
     padding: 50px;
 `
-const ShippingItem = styled.div`
-    border: 1px solid #333;
-    padding: 10px;
-`
+// 
 
-export default ({ rowData, columns, index }) => {
+export default ({ rowData, columns, index, ...props }) => {
     const [expanded, expand] = useState(false)
+
     return [
         <TableRow index={index} key={`${rowData.name}`} onClick={() => expand(!expanded)} key={rowData.name}>
             {columns.map((column, columnIndex) => {
-                return [
-                    <>
-                        {typeof rowData[column] === "object" ?
-                            <TableCell>
-                                <Tooltip
-                                    arrow
-                                    placement={'top'}
-                                    title={rowData[column].map((item, index) => (
-                                        <HoverDetails>
-                                            {Object.keys(item).map(key => (
-                                                <Typography variant="body2" color="white" align="center">{_.upperFirst(key)}: {item[key]}</Typography>
-                                            ))}
-                                        </HoverDetails>
-                                    ))}
+                return (
+                    typeof rowData[column] === "object" ?
+                        <TableCell key={`${column}-header-cell`}>
+                            <Tooltip
+                                arrow
+                                placement={'top'}
+                                title={rowData[column].map((item, index) => (
+                                    <HoverDetails key={`${index}-tooltip`}>
+                                        {Object.keys(item).map(key => (
+                                            <Typography key={`${key}-value`} variant="body2" align="center">
+                                                {_.upperFirst(key)}: {item[key]}
+                                            </Typography>
+                                        ))}
+                                    </HoverDetails>
+                                ))}
+                            >
+                                <Link
+                                    color="primary"
+                                    component="button"
                                 >
-                                    <Button
-                                        contained
-                                        variant="contained"
-                                        color="primary"
-                                    >
-                                        {_.upperFirst(column)} Info
-                                         </Button>
-                                </Tooltip>
-                            </TableCell>
-                            :
-                            <TableCell>{rowData[column]}</TableCell>}
-
-                    </>
-                ]
+                                    {_.upperFirst(column)} Info
+                                         </Link>
+                            </Tooltip>
+                        </TableCell>
+                        :
+                        <TableCell key={`${column}-header-cell`}>{rowData[column]}</TableCell>
+                )
             })}
         </TableRow>,
         <SubRow key={`${rowData.name}-expansion`} className="subrow">
             <TableCell padding="none" colSpan={columns.length}>
                 <Collapse in={expanded} timeout="auto" unmountOnExit={false}>
                     <CollapseInner>
-                        <ul>
-                            {columns.map(column => (
-                                <li><strong>{column}:</strong> {typeof rowData[column] !== "object" ? rowData[column] : 'expand'}</li>
-                            ))}
-                        </ul>
+                        {columns.map(column => (
+                            <Editor key={`${rowData.id}-${column}-expanded`} id={rowData.id} {...props} column={column} item={rowData[column]} />
+                        ))}
+                        <Button onClick={() => props.setSinglePageId(rowData.id)} variant="contained" color="primary">
+                            View/Edit
+                        </Button>
                     </CollapseInner>
                 </Collapse>
             </TableCell>
