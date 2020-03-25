@@ -7,7 +7,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
 import Link from '@material-ui/core/Link';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
 import Editor from "./Editor.js"
@@ -37,7 +36,6 @@ const SubRow = styled(MUITableRow)`
 const CollapseInner = styled.div`
     padding: 50px;
 `
-// 
 
 export default ({ rowData, columns, index, ...props }) => {
     const [expanded, expand] = useState(false)

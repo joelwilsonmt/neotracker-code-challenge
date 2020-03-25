@@ -26,12 +26,10 @@ export default ({ id, ...props }) => {
         const searchUrl = `${url}/${id}`
         $.get(searchUrl)
             .then(result => {
-                console.log("single page result:", result)
                 setData(result)
             })
     }
 
-    console.log("data before render:", data)
     return (
         <Wrapper>
             <Typography variant="h4" component="h1">

@@ -26,8 +26,6 @@ const FilterWrapper = styled.div`
   display: flex;
 `
 
-
-
 export default ({ data, ...props }) => {
   const [filteredData, setData] = useState(data)
   const [page, setPage] = useState(0)
@@ -60,10 +58,8 @@ export default ({ data, ...props }) => {
   const filter = (category, value) => {
     if (value.length > 0) {
       const newData = _.filter(data, item => {
-        console.log("index of item?", value.indexOf(item[category]))
         return value.indexOf(item[category]) >= 0
       })
-      console.log("new data in filter before set", newData)
       setData(newData)
     }
     else {
@@ -81,11 +77,6 @@ export default ({ data, ...props }) => {
   const paginationProps = { sortAscending, rowsPerPage, setRowsPerPage, setPage, sortBy, sort, page, data: filteredData, pageLength: _.chunk(filteredData, rowsPerPage).length }
   const columns = Object.keys(data[0])
   const optionsObj = makeOptionsTree(data) //memoize?
-
-  // console.log("options tree", optionsObj)
-  // // optionsObj.cargo = makeOptionsTree(optionsObj.cargo, true)
-  // console.log("filter options after option tree", makeOptionsTree(optionsObj.cargo))
-
 
   return [
     <Header key="page-header">

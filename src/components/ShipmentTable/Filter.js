@@ -45,11 +45,6 @@ const CancelIcon = styled(Cancel)`
 export default ({ category, options, filter }) => {
     const [selected, setSelected] = useState([])
 
-    const handleClick = (value) => {
-        console.log("handling click/change", value)
-        filter(category, value)
-        setSelected(value)
-    }
     const handleChange = event => {
         setSelected(event.target.value)
     }
