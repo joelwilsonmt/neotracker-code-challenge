@@ -15,8 +15,8 @@
           "volume": "3"
         }
       ],
-      "mode": "sea",
-      "type": "FCL",
+      "mode": "l;kasdjlkjfsl",
+      "type": "asdassd",
       "destination": "Saarbrücker Str. 38, 10405 Berlin",
       "origin": "Shanghai Port",
       "services": [
@@ -24,7 +24,7 @@
           "type": "customs"
         }
       ],
-      "total": "1000",
+      "total": "300",
       "status": "ACTIVE",
       "userId": "U1000"
     },
@@ -43,7 +43,7 @@
           "volume": "15"
         }
       ],
-      "mode": "sea",
+      "mode": "1234",
       "type": "FCL",
       "destination": "Saarbrücker Str. 38, 10405 Berlin",
       "origin": "Ningbo port",
@@ -62,7 +62,7 @@
     },
     {
       "id": "S1002",
-      "name": "PO89634, PO27X",
+      "name": "asdsasdsa",
       "cargo": [
         {
           "type": "Bikes model 27X",
@@ -70,7 +70,7 @@
           "volume": "100"
         }
       ],
-      "mode": "air",
+      "mode": "aaa",
       "type": "LCL",
       "destination": "Saarbrücker Str. 38, 10405 Berlin",
       "origin": "Shanghai Port",
@@ -159,7 +159,7 @@
     },
     {
       "id": "S1006",
-      "name": "Vacuum Cleaners",
+      "name": "Aaaaa names",
       "cargo": [
         {
           "type": "TVAC515",
